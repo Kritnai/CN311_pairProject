@@ -25,6 +25,7 @@ public class AppServer {
 
     public static void main(String[] args) throws Exception {
         uiServer = new UIServer(PORT);
+        
         while (!uiServer.isStart) {
             System.out.println("server not open yet.");
             Thread.sleep(1000);

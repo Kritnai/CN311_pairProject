@@ -44,7 +44,6 @@ public class UIClient extends Thread implements ActionListener {
     public UIClient(int port, int roundForGuess) {
         this.port = port;
         this.remainRound = roundForGuess;
-        initializeUI();
     }
 
     private void initializeUI() {
@@ -75,10 +74,7 @@ public class UIClient extends Thread implements ActionListener {
             Thread.currentThread().interrupt();
         }
 
-
         // start page
-        // JPanel southPanel = new JPanel(new GridLayout(2,2));
-
         panel = new JPanel();
         panel.add(ipLabel);
         panel.add(portLabel);
@@ -92,11 +88,10 @@ public class UIClient extends Thread implements ActionListener {
         Submitbutton.addActionListener(this);
         Guessbutton.addActionListener(this);
 
-        
         frame.add(panel, BorderLayout.CENTER);
 
-        JPanel southPanel = new JPanel(new GridLayout(2,2));
-        
+        JPanel southPanel = new JPanel(new GridLayout(2, 2));
+
         frame.add(southPanel, BorderLayout.SOUTH);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -145,11 +140,18 @@ public class UIClient extends Thread implements ActionListener {
 
                 if (position.equals("5") && digit.equals("5")) {
                     resultGuess.setText("Win you found the secret.");
+                    panel.remove(Guessbutton);
+                    panel.remove(roundRemaining);
+                    panel.remove(textField);
 
                 }
             }
 
         }
+    }
+
+    public void run() {
+        initializeUI();
     }
 
     public String getGuessNumber() {

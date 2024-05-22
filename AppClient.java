@@ -102,6 +102,7 @@ public class AppClient {
             System.out.println(e);
         }
         uiClient = new UIClient(PORT, roundForGuess);
+        uiClient.start();
         uiClient.setSecretNumber(secretNumber);
     }
 

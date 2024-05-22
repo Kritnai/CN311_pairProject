@@ -76,7 +76,7 @@ public class UIServer extends JFrame implements Runnable {
             // Simulate server work (e.g., listening for connections)
             while (!Thread.currentThread().isInterrupted()) {
                 // System.out.println("Server running on IP: " + ip + " Port: " + port);
-                Thread.sleep(1000); // Simulate work with a sleep
+                Thread.sleep(1000);
             }
         } catch (UnknownHostException e) {
             e.printStackTrace();
