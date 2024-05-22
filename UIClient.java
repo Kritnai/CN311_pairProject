@@ -1,4 +1,9 @@
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
@@ -11,17 +16,20 @@ public class UIClient extends Thread implements ActionListener {
     private String ip;
     private String guessNumber = "";
     private int remainRound;
+    private String position = "";
+    private String digit = "";
+    private String secertNumber = "";
 
-    private JPanel inputJPanel;
+    private JPanel panel;
     private JLabel ipLabel;
     private JLabel portLabel;
     private JButton Submitbutton;
     private JTextField textField;
     private JLabel nameLabel;
     private JButton Guessbutton;
-    
-    
-    private JLabel postDigitCorrecting;
+
+    private JLabel resultGuess;
+    private JLabel roundRemaining;
 
     private JFrame frame;
 
@@ -32,18 +40,19 @@ public class UIClient extends Thread implements ActionListener {
     public UIClient() {
         this(5555, 5);
     }
+
     public UIClient(int port, int roundForGuess) {
         this.port = port;
         this.remainRound = roundForGuess;
         initializeUI();
     }
 
-
     private void initializeUI() {
-
+        System.out.println("r: " + remainRound);
         // ตัวแปรทั้งหมดที่ใช้
         frame = new JFrame("Guess the Number Game");
         frame.setSize(600, 400);
+        frame.setMaximumSize(new Dimension(600, 400));
 
         ipLabel = new JLabel("ip: ");
         portLabel = new JLabel("Port: ");
@@ -52,8 +61,8 @@ public class UIClient extends Thread implements ActionListener {
         Submitbutton = new JButton("start");
         Guessbutton = new JButton("guess!");
 
-        
-        postDigitCorrecting = new JLabel("");
+        resultGuess = new JLabel("");
+        roundRemaining = new JLabel("");
 
         try {
             InetAddress inetAddress = InetAddress.getLocalHost();
@@ -66,26 +75,28 @@ public class UIClient extends Thread implements ActionListener {
             Thread.currentThread().interrupt();
         }
 
+
         // start page
-        inputJPanel = new JPanel();
-        inputJPanel.add(nameLabel);
-        inputJPanel.add(textField);
-        inputJPanel.add(ipLabel);
-        inputJPanel.add(portLabel);
-        inputJPanel.add(Submitbutton);
+        // JPanel southPanel = new JPanel(new GridLayout(2,2));
 
-        
-        inputJPanel.add(postDigitCorrecting);
+        panel = new JPanel();
+        panel.add(ipLabel);
+        panel.add(portLabel);
+        panel.add(nameLabel);
+        panel.add(textField);
+        panel.add(Submitbutton);
 
-
+        panel.add(roundRemaining);
+        panel.add(resultGuess);
 
         Submitbutton.addActionListener(this);
         Guessbutton.addActionListener(this);
 
-        frame.add(inputJPanel, BorderLayout.CENTER);
         
+        frame.add(panel, BorderLayout.CENTER);
 
-        JPanel southPanel = new JPanel();
+        JPanel southPanel = new JPanel(new GridLayout(2,2));
+        
         frame.add(southPanel, BorderLayout.SOUTH);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -95,12 +106,15 @@ public class UIClient extends Thread implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
         // หลังจากการกด submit หลังจากกรอกข้อมูลในหน้าแรก
         if (e.getActionCommand().equals("start")) {
             southPanel();
             textField.setText(null);
-            inputJPanel.remove(Submitbutton);
-            inputJPanel.add(Guessbutton);
+            panel.remove(Submitbutton);
+            panel.add(Guessbutton);
+            roundRemaining.setText("remaining round: " + (remainRound));
+
             // เด้ง pop up เพื่อรอให้อีกฝ่ายเข้ามาพร้อมกัน
             // JOptionPane.showMessageDialog(null,
             // "Hello, " + name + " wait for another player on" + " ip: " + ip + " port:" +
@@ -108,21 +122,44 @@ public class UIClient extends Thread implements ActionListener {
         }
 
         if (e.getActionCommand().equals("guess!")) {
+            roundRemaining.setText("remaining round: " + (remainRound - 1));
+
             this.guessNumber = textField.getText();
-            if (remainRound <= 0) {
-                inputJPanel.remove(Guessbutton);
-                
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException err) {
+                Thread.currentThread().interrupt();
             }
-            postDigitCorrecting.setText("cr: " + remainRound);
+
+            if (remainRound <= 0) {
+                resultGuess.setText("you lose the secrer number is " + secertNumber);
+                panel.remove(Guessbutton);
+                panel.remove(textField);
+
+            } else {
+                if (position.isEmpty() || digit.isEmpty()) {
+                    resultGuess.setText("wrong input. try again");
+                } else {
+                    resultGuess.setText("correctly position: " + position + "\ncorrectly digit: " + digit);
+                }
+
+                if (position.equals("5") && digit.equals("5")) {
+                    resultGuess.setText("Win you found the secret.");
+
+                }
+            }
+
         }
     }
 
-    public String getGuessNumber(){
+    public String getGuessNumber() {
         return this.guessNumber;
     }
-    public void resetGuessNumber(){
+
+    public void resetGuessNumber() {
         this.guessNumber = "";
     }
+
     // code ที่เธอเขียน
     public static void main(String[] args) {
         new UIClient();
@@ -134,14 +171,27 @@ public class UIClient extends Thread implements ActionListener {
         String name = textField.getText();
         nameLabel.setText("Name: " + name);
         southPanel.add(nameLabel);
+        southPanel.add(new Label());
         southPanel.add(ipLabel);
         southPanel.add(portLabel);
         southPanel.revalidate();
         southPanel.repaint();
     }
 
-    public void setRemainRound(int r){
+    public void setRemainRound(int r) {
         this.remainRound = r;
+    }
+
+    public void setPosition(String p) {
+        this.position = p;
+    }
+
+    public void setDigit(String d) {
+        this.digit = d;
+    }
+
+    public void setSecretNumber(String secertNumber) {
+        this.secertNumber = secertNumber;
     }
 
 }

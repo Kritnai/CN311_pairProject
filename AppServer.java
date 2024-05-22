@@ -17,7 +17,7 @@ public class AppServer {
 
     private static DataInputStream dataInput;
     private static DataOutputStream dataOutput;
-    private static final int roundForGuess = 4;
+    private static final int roundForGuess = 5;
 
     static ServerSocket server;
 
@@ -34,8 +34,8 @@ public class AppServer {
 
         connectSocket(PORT);
 
-        setUp();
         startGame(); // generate secret number
+        setUp();
 
         int rounds = 1;
         while (rounds <= roundForGuess) {
@@ -107,8 +107,13 @@ public class AppServer {
     }
 
     private static void setUp() {
-        // synchronize round for guess
+
         try {
+            // set secret
+            dataOutput.writeUTF(game.secret.getSecret());
+            dataOutput.flush();
+            dataInput.readUTF();
+             // synchronize round for guess
             dataOutput.writeInt(roundForGuess);
             dataOutput.flush();
 

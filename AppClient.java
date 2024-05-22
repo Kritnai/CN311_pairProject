@@ -8,6 +8,7 @@ public class AppClient {
     static int roundForGuess;
     static String str;
     static final int PORT = 8080;
+    static String secretNumber;
 
     private static DataInputStream dataInput;
     private static DataOutputStream dataOutput;
@@ -20,7 +21,7 @@ public class AppClient {
         dataInput = new DataInputStream(s.getInputStream());
         // output data
         dataOutput = new DataOutputStream(s.getOutputStream());
-        
+
         setUp();
 
         int rounds = 1;
@@ -33,23 +34,37 @@ public class AppClient {
             System.out.println("\nserver say: " + str);
 
             while (str.equals("wrong data input.")) {
+                // update value on UI
+                currentDigitPost[0] = "";
+                currentDigitPost[1] = "";
+                uiClient.setPosition("");
+                uiClient.setDigit("");
+
                 userTyping = userInput(rounds);
                 dataOutput.writeUTF(userTyping);
                 dataOutput.flush();
 
                 str = dataInput.readUTF();
                 System.out.println("server say: " + str);
+
             }
 
             if (str.equals("client found the secret.")) {
+                uiClient.setPosition("5");
+                uiClient.setDigit("5");
                 break;
             }
             if (str.equals("server was reject close.")) {
                 break;
             }
-            
-            uiClient.setRemainRound(roundForGuess - rounds);
+
             setCurrentDigitPost();
+
+            // update value on UI
+            uiClient.setRemainRound(roundForGuess - rounds);
+            System.out.println("rC: " +  (roundForGuess - rounds));
+            uiClient.setPosition(getCurrentPosition());
+            uiClient.setDigit(getCurrentDigit());
             System.out.println("corrected position: " + getCurrentPosition());
             System.out.println("corrected digit: " + getCurrentDigit());
             rounds += 1;
@@ -69,7 +84,7 @@ public class AppClient {
             }
             data = uiClient.getGuessNumber();
         }
-        
+
         System.out.println("guess number: " + data);
         uiClient.resetGuessNumber();
         return data;
@@ -77,15 +92,20 @@ public class AppClient {
 
     private static void setUp() {
         try {
+            // set secret
+            secretNumber = dataInput.readUTF();
+            dataOutput.writeUTF("set secret aleady");
+            dataOutput.flush();
             // synchronize round for guess
             roundForGuess = dataInput.readInt();
         } catch (IOException e) {
             System.out.println(e);
         }
         uiClient = new UIClient(PORT, roundForGuess);
+        uiClient.setSecretNumber(secretNumber);
     }
 
-    private static String[] currentDigitPost;
+    private static String[] currentDigitPost = { "0", "0" };
 
     private static void setCurrentDigitPost() {
         String[] lstDataServer = str.split("_");
