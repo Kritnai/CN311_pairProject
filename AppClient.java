@@ -3,23 +3,24 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import java.util.Scanner;
-
 public class AppClient {
     String name;
     static int roundForGuess;
     static String str;
+    static final int PORT = 8080;
 
     private static DataInputStream dataInput;
     private static DataOutputStream dataOutput;
 
+    static UIClient uiClient;
+
     public static void main(String[] args) throws Exception {
-        Socket s = new Socket("localhost", 8080);
+        Socket s = new Socket("localhost", PORT);
         // input data
         dataInput = new DataInputStream(s.getInputStream());
         // output data
         dataOutput = new DataOutputStream(s.getOutputStream());
-
+        
         setUp();
 
         int rounds = 1;
@@ -29,7 +30,7 @@ public class AppClient {
             dataOutput.flush();
 
             str = dataInput.readUTF();
-            System.out.println("server say: " + str);
+            System.out.println("\nserver say: " + str);
 
             while (str.equals("wrong data input.")) {
                 userTyping = userInput(rounds);
@@ -46,6 +47,8 @@ public class AppClient {
             if (str.equals("server was reject close.")) {
                 break;
             }
+            
+            uiClient.setRemainRound(roundForGuess - rounds);
             setCurrentDigitPost();
             System.out.println("corrected position: " + getCurrentPosition());
             System.out.println("corrected digit: " + getCurrentDigit());
@@ -57,9 +60,18 @@ public class AppClient {
     }
 
     private static String userInput(int times) {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("\nenter your guess number #" + times + ": ");
-        String data = sc.nextLine();
+        String data = uiClient.getGuessNumber();
+        while (data.isEmpty()) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            data = uiClient.getGuessNumber();
+        }
+        
+        System.out.println("guess number: " + data);
+        uiClient.resetGuessNumber();
         return data;
     }
 
@@ -70,9 +82,11 @@ public class AppClient {
         } catch (IOException e) {
             System.out.println(e);
         }
+        uiClient = new UIClient(PORT, roundForGuess);
     }
 
     private static String[] currentDigitPost;
+
     private static void setCurrentDigitPost() {
         String[] lstDataServer = str.split("_");
 
@@ -84,11 +98,12 @@ public class AppClient {
         // Handle colon-separated pairs
         currentDigitPost = parts[parts.length - 1].split(":");
     }
-    
-    private static String getCurrentPosition(){
+
+    private static String getCurrentPosition() {
         return currentDigitPost[0];
     }
-    private static String getCurrentDigit(){
+
+    private static String getCurrentDigit() {
         return currentDigitPost[1];
     }
 
