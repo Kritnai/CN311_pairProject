@@ -12,6 +12,7 @@ public class OperateSecret extends Thread {
         createSecret();
     }
 
+    // setup array for random
     private ArrayList<String> initArray() {
         ArrayList<String> lst = new ArrayList<>();
         lst.add("1");
@@ -27,6 +28,7 @@ public class OperateSecret extends Thread {
         return lst;
     }
 
+    // create secret number
     private void createSecret() {
         Random ran = new Random();
 
@@ -45,6 +47,7 @@ public class OperateSecret extends Thread {
         return secretString;
     }
 
+    // check and update input correcting
     public boolean checkResult(String uesrGuess) {
         position = 0;
         digit = 0;

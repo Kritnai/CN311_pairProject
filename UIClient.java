@@ -1,14 +1,11 @@
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
 import javax.swing.*;
 
 public class UIClient extends Thread implements ActionListener {
@@ -33,12 +30,10 @@ public class UIClient extends Thread implements ActionListener {
 
     private JFrame frame;
 
-    // private JLabel numberLabel;
-    // private JLabel historyLabel;
-    // private JTextField GuessNumbertextField;
-
     public UIClient() {
         this(5555, 5);
+        initializeUI();
+
     }
 
     public UIClient(int port, int roundForGuess) {
@@ -63,6 +58,7 @@ public class UIClient extends Thread implements ActionListener {
         resultGuess = new JLabel("");
         roundRemaining = new JLabel("");
 
+        // display current IP and Port
         try {
             InetAddress inetAddress = InetAddress.getLocalHost();
             this.ip = inetAddress.getHostAddress();
@@ -76,12 +72,16 @@ public class UIClient extends Thread implements ActionListener {
 
         // start page
         panel = new JPanel();
+        
+        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+
         panel.add(ipLabel);
         panel.add(portLabel);
+        panel.add(Box.createRigidArea(new Dimension(0,10)));
         panel.add(nameLabel);
         panel.add(textField);
         panel.add(Submitbutton);
-
+ 
         panel.add(roundRemaining);
         panel.add(resultGuess);
 
@@ -101,14 +101,16 @@ public class UIClient extends Thread implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
-        // หลังจากการกด submit หลังจากกรอกข้อมูลในหน้าแรก
         if (e.getActionCommand().equals("start")) {
             southPanel();
-            textField.setText(null);
-            panel.remove(Submitbutton);
-            panel.add(Guessbutton);
             roundRemaining.setText("remaining round: " + (remainRound));
+            panel.add(Box.createRigidArea(new Dimension(0, 10)));
+            textField.setText(null);
+            panel.add(Box.createRigidArea(new Dimension(0, 10)));
+            panel.remove(Submitbutton);
+            panel.add(Box.createRigidArea(new Dimension(0, 20)));
+            panel.add(Guessbutton);
+            //roundRemaining.setText("remaining round: " + (remainRound));
 
             // เด้ง pop up เพื่อรอให้อีกฝ่ายเข้ามาพร้อมกัน
             // JOptionPane.showMessageDialog(null,

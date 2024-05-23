@@ -17,6 +17,7 @@ public class gameApp extends Thread {
         }
     }
 
+    // test function ไม่ได้ใช้
     public void checkCorrecting(String userTyping){
         while (checkInput(userTyping) != 5 || userTyping.length() > 5) {
             System.out.println("\nyour text input is wrong!");

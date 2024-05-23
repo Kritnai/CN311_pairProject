@@ -20,6 +20,7 @@ public class UIServer extends JFrame implements Runnable {
         initializeUI();
     }
 
+    // set defult port
     public UIServer() {
         this(5555);
     }
@@ -66,7 +67,6 @@ public class UIServer extends JFrame implements Runnable {
     public void run() {
         while (!isStart) {
         }
-        // ทำสิ่งที่ต้องการเมื่อคลิกปุ่ม "Start Server"
         try {
             InetAddress inetAddress = InetAddress.getLocalHost();
             String ip = inetAddress.getHostAddress();
@@ -98,7 +98,7 @@ public class UIServer extends JFrame implements Runnable {
         buttonPanel.removeAll();
         buttonPanel.add(closeButton);
 
-        // setIsStart(true);
+        
 
     }
 
@@ -108,7 +108,6 @@ public class UIServer extends JFrame implements Runnable {
         if (uiThread != null && uiThread.isAlive()) {
             uiThread.interrupt();
         }
-        // ทำสิ่งที่ต้องการเมื่อคลิกปุ่ม "Close Server"
         dispose(); // ปิดหน้าต่าง GUI
     }
 

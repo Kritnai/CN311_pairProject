@@ -22,7 +22,7 @@ public class AppClient {
         // output data
         dataOutput = new DataOutputStream(s.getOutputStream());
 
-        setUp();
+        setUp(); // set secert number and set roung for guess
 
         int rounds = 1;
         while (rounds <= roundForGuess) {
@@ -74,6 +74,7 @@ public class AppClient {
 
     }
 
+    // get new input from UI
     private static String userInput(int times) {
         String data = uiClient.getGuessNumber();
         while (data.isEmpty()) {
@@ -110,7 +111,6 @@ public class AppClient {
 
     private static void setCurrentDigitPost() {
         String[] lstDataServer = str.split("_");
-
         // Step 1: Remove the brackets
         String trimmedData = lstDataServer[1].substring(1, lstDataServer[1].length() - 1);
         System.out.println("correct history: " + trimmedData);

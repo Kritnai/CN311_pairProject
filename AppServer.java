@@ -9,7 +9,6 @@ import java.net.Socket;
 public class AppServer {
     static final int PORT = 8080;
 
-    String userTyping;
     static String guess;
     static gameApp game = new gameApp();
     static ArrayList<String> lastGuess = new ArrayList<>();
@@ -31,12 +30,14 @@ public class AppServer {
             Thread.sleep(1000);
         }
 
+        // open UI server
         uiServer.startServer();
 
+        // connect client
         connectSocket(PORT);
 
         startGame(); // generate secret number
-        setUp();
+        setUp(); // set secret number in server and send round to client
 
         int rounds = 1;
         while (rounds <= roundForGuess) {
@@ -50,7 +51,6 @@ public class AppServer {
                 guess = dataInput.readUTF();
                 System.out.println("client guess number: " + guess);
             }
-            // sendCurrentDetail();
 
             rounds += 1;
             if (game.secret.checkResult(guess)) {
@@ -64,11 +64,11 @@ public class AppServer {
             dataOutput.writeUTF(lastGuess + "_" + lastDigitPosition);
             dataOutput.flush();
 
+            // check status server
             if (!uiServer.isStart) {
                 dataOutput.writeUTF("server was reject close.");
                 dataOutput.flush();
                 break;
-
             }
         }
         if (game.secret.position != 5) {
@@ -83,7 +83,6 @@ public class AppServer {
     }
 
     private static void connectSocket(int port) throws IOException {
-
         server = new ServerSocket(port); // socket bind lisen
         // accept client
         System.out.println("wating for client connect.");
@@ -108,7 +107,6 @@ public class AppServer {
     }
 
     private static void setUp() {
-
         try {
             // set secret
             dataOutput.writeUTF(game.secret.getSecret());
